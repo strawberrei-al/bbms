@@ -1,7 +1,7 @@
 import sqlite3
 sql_queries = [
     """
-    CREATE TABLE IF NOT EXIST LOGIN (
+    CREATE TABLE IF NOT EXISTS LOGIN (
         username VARCHAR(50) PRIMARY KEY,
         password TEXT NOT NULL,
         user_id INTEGER NOT NULL,
@@ -9,7 +9,7 @@ sql_queries = [
     );
     """,
     """
-    CREATE TABLE IF NOT EXIST USER (
+    CREATE TABLE IF NOT EXISTS USER (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         age INTEGER NOT NULL,
@@ -19,7 +19,7 @@ sql_queries = [
     );
     """,
     """
-    CREATE TABLE DONATIONFORM (
+    CREATE TABLE IF NOT EXISTS DONATIONFORM (
         donation_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         bloodtype VARCHAR(3) NOT NULL,
@@ -29,7 +29,7 @@ sql_queries = [
     );
     """,
     """
-    CREATE TABLE REQUESTFORM (
+    CREATE TABLE IF NOT EXISTS REQUESTFORM (
         request_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         bloodtype VARCHAR(3) NOT NULL,
@@ -40,7 +40,7 @@ sql_queries = [
     );
     """,
     """
-    CREATE TABLE BLOODSTOCK (
+    CREATE TABLE IF NOT EXISTS BLOODSTOCK (
         bloodstock_id INTEGER PRIMARY KEY AUTOINCREMENT,
         bloodtype VARCHAR(3) NOT NULL,
         quantityeach INTEGER NOT NULL,
@@ -65,8 +65,34 @@ def create_tables():
     for query in sql_queries:
         cursor.execute(query)
 
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS new_bloodstock (
+            bloodstock_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            bloodtype VARCHAR(3) NOT NULL,
+            quantityeach INTEGER NOT NULL,
+            totalquantity INTEGER NOT NULL,
+            donor_id INTEGER,
+            FOREIGN KEY (donor_id) REFERENCES USER(user_id)
+        );
+    ''')
+
+    # Step 2: Copy data from the old 'BLOODSTOCK' table to the new one
+    cursor.execute('''
+        INSERT INTO new_bloodstock (bloodtype, quantityeach, totalquantity, donor_id)
+        SELECT bloodtype, quantityeach, totalquantity, donor_id FROM BLOODSTOCK;
+    ''')
+
+    # Step 3: Drop the old 'BLOODSTOCK' table
+    cursor.execute('DROP TABLE IF EXISTS BLOODSTOCK')
+
+    # Step 4: Rename the new table to 'BLOODSTOCK'
+    cursor.execute('ALTER TABLE new_bloodstock RENAME TO BLOODSTOCK')
+
 # Commit changes and close the connection
     conn.commit()
     conn.close()
 
 print("Tables created successfully!")
+
+create_tables()
