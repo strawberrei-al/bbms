@@ -1,15 +1,7 @@
 import sqlite3
-
-# Connect to the database (creates a new file if it doesn't exist)
-connection = sqlite3.connect("blood_bank.db")
-
-# Create a cursor to execute SQL commands
-cursor = connection.cursor()
-
-# Define your SQL queries as a list
 sql_queries = [
     """
-    CREATE TABLE LOGIN (
+    CREATE TABLE IF NOT EXIST LOGIN (
         username VARCHAR(50) PRIMARY KEY,
         password TEXT NOT NULL,
         user_id INTEGER NOT NULL,
@@ -17,7 +9,7 @@ sql_queries = [
     );
     """,
     """
-    CREATE TABLE USER (
+    CREATE TABLE IF NOT EXIST USER (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         age INTEGER NOT NULL,
@@ -60,12 +52,21 @@ sql_queries = [
     """
 ]
 
+def connect_db():
+# Connect to the database (creates a new file if it doesn't exist)
+    return sqlite3.connect("blood_bank.db")
+
+def create_tables():
+# Create a cursor to execute SQL commands
+    conn = connect_db()
+    cursor = conn.cursor()
+
 # Execute each query
-for query in sql_queries:
-    cursor.execute(query)
+    for query in sql_queries:
+        cursor.execute(query)
 
 # Commit changes and close the connection
-connection.commit()
-connection.close()
+    conn.commit()
+    conn.close()
 
 print("Tables created successfully!")
