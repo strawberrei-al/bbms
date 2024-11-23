@@ -3,6 +3,7 @@ from tkinter import messagebox
 import bcrypt
 from datatables import connect_db  # Import the connect_db function to interact with the database
 
+
 def register_user(name, age, bloodtype, address, username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
@@ -42,55 +43,32 @@ def register_user(name, age, bloodtype, address, username, password):
 def user_login(username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
-
-    # Fetch the stored hashed password for the username
-    cursor.execute("""SELECT password, user_id FROM LOGIN WHERE username = ?""", (username,))
+    
+        # Fetch stored hashed password and user_id for the username
+    cursor.execute("SELECT password, user_id FROM LOGIN WHERE username = ?", (username,))
     record = cursor.fetchone()
 
     if record:
-        stored_hashed_password = record[0]
-        user_id = record[1]
+        stored_hashed_password, user_id = record
 
-        # Compare the stored hashed password with the entered password
+        # Compare the entered password with the stored hashed password
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
-            # Passwords match, now check the role
+            # Fetch the user's role based on user_id
             cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
-            role = cursor.fetchone()[0]
+            role_record = cursor.fetchone()
 
-            if role == "user":
-                print("User login successful!")
+            if role_record:
+                role = role_record[0]
+                conn.close()
+                return True, role  # Login successful, return role
             else:
-                print("This is not a user account.")
+                conn.close()
+                return False, "Role not found."  # No role associated with user_id
         else:
-            print("Invalid credentials: incorrect password.")
+            conn.close()
+            return False, "Incorrect password."  # Password mismatch
     else:
-        print("Invalid credentials: username not found.")
-
-    conn.close()
-
-
-def admin_login(username, password):
-    conn = sqlite3.connect("blood_bank.db")
-    cursor = conn.cursor()
-
-    # Validate username and password
-    cursor.execute("""
-        SELECT user_id FROM LOGIN WHERE username = ? AND password = ?
-    """, (username, password))
-
-    user = cursor.fetchone()
-
-    if user:
-        user_id = user[0]
-        cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
-        role = cursor.fetchone()[0]
-
-        if role == "admin":
-            print("Admin login successful!")
-        else:
-            print("This is not an admin account.")
-    else:
-        print("Invalid credentials.")
-
-    conn.close()
+        conn.close()
+        return False, "Username not found."  # No such username in the database
+    
     
