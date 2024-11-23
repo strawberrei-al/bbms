@@ -1,4 +1,5 @@
 import sqlite3
+from tkinter import messagebox
 import bcrypt
 from datatables import connect_db  # Import the connect_db function to interact with the database
 
@@ -11,10 +12,8 @@ def register_user(name, age, bloodtype, address, username, password):
     existing_user = cursor.fetchone()  # Fetch one result, if it exists
 
     if existing_user:
-        print("Error: Username already exists!")
-        conn.close()
-        return "Registration Failed: Username already exists."
-    
+        messagebox.showerror("Error", "Username already exists!")
+        
     # Hash the password using bcrypt
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
@@ -94,3 +93,4 @@ def admin_login(username, password):
         print("Invalid credentials.")
 
     conn.close()
+    
