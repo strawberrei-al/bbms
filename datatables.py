@@ -89,10 +89,11 @@ def create_tables():
     # Step 4: Rename the new table to 'BLOODSTOCK'
     cursor.execute('ALTER TABLE new_bloodstock RENAME TO BLOODSTOCK')
 
+
 # Commit changes and close the connection
     conn.commit()
     conn.close()
 
-print("Tables created successfully!")
+# print("Tables created successfully!")
 
 create_tables()
