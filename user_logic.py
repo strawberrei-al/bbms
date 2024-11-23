@@ -33,7 +33,7 @@ def register_user(name, age, bloodtype, address, username, password):
     cursor.execute("""
         INSERT INTO LOGIN (username, password, user_id)
         VALUES (?, ?, ?)
-    """, (username, password, user_id))
+    """, (username, hashed_password.decode('utf-8'), user_id))
 
     conn.commit()
     print("User registration successful!")
@@ -44,23 +44,28 @@ def user_login(username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
 
-    # Validate username and password
-    cursor.execute("""
-        SELECT user_id FROM LOGIN WHERE username = ? AND password = ?
-    """, (username, password))
-    user = cursor.fetchone()
+    # Fetch the stored hashed password for the username
+    cursor.execute("""SELECT password, user_id FROM LOGIN WHERE username = ?""", (username,))
+    record = cursor.fetchone()
 
-    if user:
-        user_id = user[0]
-        cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
-        role = cursor.fetchone()[0]
+    if record:
+        stored_hashed_password = record[0]
+        user_id = record[1]
 
-        if role == "user":
-            print("User login successful!")
+        # Compare the stored hashed password with the entered password
+        if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+            # Passwords match, now check the role
+            cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
+            role = cursor.fetchone()[0]
+
+            if role == "user":
+                print("User login successful!")
+            else:
+                print("This is not a user account.")
         else:
-            print("This is not a user account.")
+            print("Invalid credentials: incorrect password.")
     else:
-        print("Invalid credentials.")
+        print("Invalid credentials: username not found.")
 
     conn.close()
 
