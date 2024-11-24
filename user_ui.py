@@ -1,6 +1,6 @@
 from tkinter import messagebox
 import customtkinter as ctk
-from user_funtions import blood_donation
+from user_functions import blood_donation, blood_request
 
 def donationform_ui(user_id):
     """
@@ -54,7 +54,59 @@ def donationform_ui(user_id):
 
 
 def request_blood(user_id):
-    pass
+    """
+    UI for the Request Blood form.
+    Collects user input and passes it to the blood_request function.
+    
+    Args:
+        user_id (int): The ID of the currently logged-in user.
+    """
+    # Create the window
+    window = ctk.CTkToplevel()
+    window.geometry("400x400")
+    window.title("Request Blood")
+    ctk.CTkLabel(window, text="We're here for you. Send us a Request!", font=("Arial", 20)).pack(pady=10)
+
+    # Input fields
+    ctk.CTkLabel(window, text="Blood Type:").pack(pady=5)
+    blood_type = ctk.CTkOptionMenu(window, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+    blood_type.pack(pady=5)
+
+    ctk.CTkLabel(window, text="Quantity(ml):").pack(pady=5)
+    quantity_entry = ctk.CTkEntry(window, placeholder_text="Enter Quantity Needed")
+    quantity_entry.pack(pady=5)
+
+    ctk.CTkLabel(window, text="Patient Name:").pack(pady=5)
+    patient_name_entry = ctk.CTkEntry(window, placeholder_text="Enter Patient Name")
+    patient_name_entry.pack(pady=5)
+
+    ctk.CTkLabel(window, text="Reason:").pack(pady=5)
+    reason_entry = ctk.CTkEntry(window, placeholder_text="Enter Reason for Request")
+    reason_entry.pack(pady=5)
+
+    # Submit button function
+    def submit_request():
+        # Get data from input fields
+        blood_type_value = blood_type.get()
+        quantity = quantity_entry.get()
+        patient_name = patient_name_entry.get().strip()
+        reason = reason_entry.get().strip()
+
+        # Validation
+        if not blood_type_value or not quantity or not patient_name or not reason:
+            messagebox.showerror("Error", "Please fill in all required fields.")
+            return
+
+        try:
+            # Call the backend function
+            blood_request(user_id, blood_type_value, quantity, patient_name, reason)
+            messagebox.showinfo("Success", "Request successfully sent!")
+            window.destroy()  # Close the form on success
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    # Submit button
+    ctk.CTkButton(window, text="Submit", command=submit_request).pack(pady=10)
 
 
 def view_history():
