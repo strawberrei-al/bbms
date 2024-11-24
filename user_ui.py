@@ -1,6 +1,6 @@
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 import customtkinter as ctk
-from user_functions import blood_donation, blood_request
+from user_functions import blood_donation, blood_request, fetch_combined_history
 
 def donationform_ui(user_id):
     """
@@ -109,8 +109,67 @@ def request_blood(user_id):
     ctk.CTkButton(window, text="Submit", command=submit_request).pack(pady=10)
 
 
-def view_history():
-    pass
+# def display_history(user_id):
+#     """
+#     Displays the combined history of donations and requests in a new window.
+
+#     Args:
+#         user_id (int): The ID of the user.
+#     """
+#     # Fetch history
+#     history = fetch_combined_history(user_id)
+#     if not history:
+#         messagebox.showinfo("No History", "No history to display.")
+#         return
+
+# # Create new window
+#     history_window = ctk.CTkToplevel()
+#     history_window.geometry("600x400")
+#     history_window.title("Your History")
+
+# # Table headers
+#     headers = ["Transaction Type", "Blood Type", "Name", "Disease", "Quantity", "Status", "Date"]
+#     for col, header in enumerate(headers):
+#         label = ctk.CTkLabel(history_window, text=header, font=("Arial", 12, "bold"))
+#         label.grid(row=0, column=col, padx=5, pady=5)
+
+#     # Add rows to the table
+#     for row, record in enumerate(history, start=1):
+#         for col, value in enumerate(record.values()):
+#             label = ctk.CTkLabel(history_window, text=value, font=("Arial", 10))
+#             label.grid(row=row, column=col, padx=5, pady=5)
+
+def display_history(user_id):
+    """
+    Displays the combined history of donations and requests in a new window.
+
+    Args:
+        user_id (int): The ID of the user.
+    """
+    # Fetch history
+    history = fetch_combined_history(user_id)
+    if not history:
+        messagebox.showinfo("No History", "No history to display.")
+        return
+
+    # Create new window
+    history_window = ctk.CTkToplevel()
+    history_window.geometry("800x400")
+    history_window.title("Your History")
+
+    # Table headers
+    headers = ["Type", "Name", "Blood Type", "Detail", "Status", "Date"]
+    for col, header in enumerate(headers):
+        label = ctk.CTkLabel(history_window, text=header, font=("Arial", 12, "bold"))
+        label.grid(row=0, column=col, padx=5, pady=5)
+
+    # Add rows to the table
+    for row, record in enumerate(history, start=1):
+        for col, key in enumerate(headers):
+            value = record[key]  # Match keys to dictionary
+            label = ctk.CTkLabel(history_window, text=value, font=("Arial", 10))
+            label.grid(row=row, column=col, padx=5, pady=5)
+
 
 
 def notification():

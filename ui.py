@@ -2,7 +2,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Import PIL
 from user_logic import register_user, login
-from user_ui import donationform_ui, request_blood, view_history, notification, logout
+from user_ui import donationform_ui, request_blood, display_history, notification, logout
 
 # Set up CustomTkinter appearance
 ctk.set_appearance_mode("Light")
@@ -35,7 +35,7 @@ def user_menu(user_id):
 
     donate_button = ctk.CTkButton(user_window, text="Donate Blood", command=lambda: donationform_ui(user_id), corner_radius=20, fg_color="#880808", width=200, height=50)
     request_button = ctk.CTkButton(user_window, text="Request Blood", command=lambda: request_blood(user_id), corner_radius=20, fg_color="#AA4A44", width=200, height=50)
-    history_button = ctk.CTkButton(user_window, text="View History", command=lambda: view_history(), corner_radius=20, fg_color="#6E260E", width=200, height=50)
+    history_button = ctk.CTkButton(user_window, text="View History", command=lambda: display_history(user_id), corner_radius=20, fg_color="#6E260E", width=200, height=50)
     notif_button = ctk.CTkButton(user_window, text="Notification", command=lambda: notification(), corner_radius=20, fg_color="#E97451", width=200, height=50)
     logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: logout, corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
 
