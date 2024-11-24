@@ -4,7 +4,7 @@ import bcrypt
 from datatables import connect_db  # Import the connect_db function to interact with the database
 
 
-def register_user(name, age, bloodtype, address, username, password):
+def register_user(name, age, bloodtype, address, contact, email, username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
 
@@ -23,9 +23,9 @@ def register_user(name, age, bloodtype, address, username, password):
 
     # Insert into USER table
     cursor.execute("""
-        INSERT INTO USER (name, age, bloodtype, address, role)
-        VALUES (?, ?, ?, ?, ?)
-    """, (name, age, bloodtype, address, role))
+        INSERT INTO USER (name, age, bloodtype, address, role, contact, email)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (name, age, bloodtype, address, role, contact, email))
 
     user_id = cursor.lastrowid
 

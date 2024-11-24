@@ -67,7 +67,7 @@ def admin_login():
 # Function for Registration Form
 def register_form():
     form_window = ctk.CTkToplevel(root)
-    form_window.geometry("400x500")
+    form_window.geometry("400x550")
     form_window.title("Register")
 
     # Title
@@ -89,6 +89,12 @@ def register_form():
     name_entry.pack(pady=5)
     age_entry = ctk.CTkEntry(form_window, placeholder_text="Age")
     age_entry.pack(pady=5)
+
+    contact_entry = ctk.CTkEntry(form_window, placeholder_text="Phone number")
+    contact_entry.pack(pady=5)
+    email_entry = ctk.CTkEntry(form_window, placeholder_text="Email")
+    email_entry.pack(pady=5)
+
     address_entry = ctk.CTkEntry(form_window, placeholder_text="Address")
     address_entry.pack(pady=5)
 
@@ -108,15 +114,17 @@ def register_form():
         blood_type_value = blood_type.get()
         username = username_entry.get()
         password = pass_entry.get()
+        contact = contact_entry.get()
+        email = email_entry.get()
 
         # Validate Input
-        if not name or not age or not address or not username or not password or blood_type_value == "Select Blood Type":
+        if not name or not age or not address or not username or not password or not contact or not email or blood_type_value == "Select Blood Type":
             messagebox.showerror("Error", "Please fill out all fields!")
             return  # Exit the function if validation fails
 
         try:
             # Call the backend registration function
-            register_user(name, age, blood_type_value, address, username, password)
+            register_user(name, age, blood_type_value, address, contact, email, username, password)
             messagebox.showinfo("Success", "Registration Successful!")
             form_window.destroy()  # Close the form window on success
         except Exception as e:
@@ -126,6 +134,8 @@ def register_form():
             name_entry.delete(0, "end")
             age_entry.delete(0, "end")
             address_entry.delete(0, "end")
+            contact_entry.delete(0, "end")
+            email_entry.delete(0, "end")
             blood_type.set("Select Blood Type")
 
     ctk.CTkButton(form_window, text="Submit", command=submit_registration).pack(pady=10)

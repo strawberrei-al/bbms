@@ -137,7 +137,8 @@ def create_tables():
     # cursor.execute('DROP TABLE DONATIONFORM')
     # cursor.execute('DROP TABLE FORMREQUEST')
     # cursor.execute('DROP TABLE new_bloodstock')
-
+    # cursor.execute("ALTER TABLE USER ADD COLUMN contact VARCHAR")
+    # cursor.execute("ALTER TABLE USER ADD COLUMN email VARCHAR")
 
 # Commit changes and close the connection
     conn.commit()
