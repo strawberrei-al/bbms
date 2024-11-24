@@ -1,7 +1,7 @@
 from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Import PIL
-from user_logic import register_user, user_login
+from user_logic import register_user, login
 
 # Set up CustomTkinter appearance
 ctk.set_appearance_mode("Light")
@@ -24,11 +24,20 @@ background_label = ctk.CTkLabel(root, image=background_image_tk, text="")
 background_label.place(relwidth=1, relheight=1)
 
 def user_menu():
-    pass
+    user_window = ctk.CTkToplevel(root)
+    user_window.geometry("400x500")
+    user_window.title("USER MENU")
+
+    ctk.CTkLabel(user_window, text="Welcome to the User Menu", font=("Arial", 20)).pack(pady=20)
+
+    ctk.CTkButton(user_window, text="Logout", command=user_window.destroy).pack(pady=10)
+
 
 
 def admin_menu():
-    pass
+    admin_window = ctk.CTkToplevel(root)
+    admin_window.geometry("400x500")
+    admin_window.title("ADMIN MENU")
 
 # Function for User Login Form (as an example)
 def user_login():
@@ -126,25 +135,26 @@ def login_form(role):
 
 
         try:
-        # Call user_login from user_logic.py to validate credentials
-            user_login, user_role = user_login(username, password)
+            # Call user_login from user_logic.py to validate credentials
+            login_successful, user_role = login(username, password)
 
-            if user_role == role.lower():  # Check if role matches (case-insensitive)
-                messagebox.showinfo("Success", f"{role} Login Successful!")
-                login_window.destroy()
-                # Call the respective menu based on role
-                if role == "Admin":
-                    admin_menu()  # Replace with your Admin Menu function
-                elif role == "User":
-                    user_menu()   # Replace with your User Menu function
+            if login_successful:
+                if user_role.lower() == role.lower():  # Match role (case-insensitive)
+                    messagebox.showinfo("Success", f"{role} Login Successful!")
+                    login_window.destroy()
+
+                    # Direct to the respective menu
+                    if role.lower() == "admin":
+                        admin_menu()
+                    elif role.lower() == "user":
+                        user_menu()
                 else:
-                    messagebox.showerror("Error", f"This is not a {role} account.")
-                    username_entry.delete(0, "end")
-                    password_entry.delete(0, "end")
-        except ValueError as e:  # For invalid credentials or other issues
-            messagebox.showerror("Error", str(e))
-            username_entry.delete(0, "end")
-            password_entry.delete(0, "end")
+                    messagebox.showerror("Error", f"This account is not a {role} account.")
+            else:
+                messagebox.showerror("Error", user_role)  # user_role contains the error message
+
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
 
     ctk.CTkButton(login_window, text="Submit", command=submit_login).pack(pady=10)
