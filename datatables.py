@@ -37,27 +37,27 @@ sql_queries = [
         role TEXT DEFAULT 'user'
     );
     """,
-    """
-    CREATE TABLE IF NOT EXISTS DONATIONFORM (
-        donation_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        bloodtype VARCHAR(3) NOT NULL,
-        disease TEXT,
-        donation_date DATE DEFAULT CURRENT_DATE,
-        FOREIGN KEY (user_id) REFERENCES USER(user_id)
-    );
-    """,
-    """
-    CREATE TABLE IF NOT EXISTS REQUESTFORM (
-        request_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        bloodtype VARCHAR(3) NOT NULL,
-        quantityneeded INTEGER NOT NULL,
-        reason TEXT NOT NULL,
-        request_date DATE DEFAULT CURRENT_DATE,
-        FOREIGN KEY (user_id) REFERENCES USER(user_id)
-    );
-    """,
+    # """
+    # CREATE TABLE IF NOT EXISTS DONATIONFORM (
+    #     donation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     user_id INTEGER NOT NULL,
+    #     bloodtype VARCHAR(3) NOT NULL,
+    #     disease TEXT,
+    #     donation_date DATE DEFAULT CURRENT_DATE,
+    #     FOREIGN KEY (user_id) REFERENCES USER(user_id)
+    # );
+    # """,
+    # """
+    # CREATE TABLE IF NOT EXISTS REQUESTFORM (
+    #     request_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     user_id INTEGER NOT NULL,
+    #     bloodtype VARCHAR(3) NOT NULL,
+    #     quantityneeded INTEGER NOT NULL,
+    #     reason TEXT NOT NULL,
+    #     request_date DATE DEFAULT CURRENT_DATE,
+    #     FOREIGN KEY (user_id) REFERENCES USER(user_id)
+    # );
+    # """,
     """
     CREATE TABLE IF NOT EXISTS BLOODSTOCK (
         bloodstock_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,28 +85,58 @@ def create_tables():
         cursor.execute(query)
 
     
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS new_bloodstock (
+    #         bloodstock_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         bloodtype VARCHAR(3) NOT NULL,
+    #         quantityeach INTEGER NOT NULL,
+    #         totalquantity INTEGER NOT NULL,
+    #         donor_id INTEGER,
+    #         FOREIGN KEY (donor_id) REFERENCES USER(user_id)
+    #     );
+    # ''')
+
+    # # Step 2: Copy data from the old 'BLOODSTOCK' table to the new one
+    # cursor.execute('''
+    #     INSERT INTO new_bloodstock (bloodtype, quantityeach, totalquantity, donor_id)
+    #     SELECT bloodtype, quantityeach, totalquantity, donor_id FROM BLOODSTOCK;
+    # ''')
+
+    # # Step 3: Drop the old 'BLOODSTOCK' table
+    # cursor.execute('DROP TABLE IF EXISTS BLOODSTOCK')
+
+    # # Step 4: Rename the new table to 'BLOODSTOCK'
+    # cursor.execute('ALTER TABLE new_bloodstock RENAME TO BLOODSTOCK')
+
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS new_bloodstock (
-            bloodstock_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            bloodtype VARCHAR(3) NOT NULL,
-            quantityeach INTEGER NOT NULL,
-            totalquantity INTEGER NOT NULL,
-            donor_id INTEGER,
-            FOREIGN KEY (donor_id) REFERENCES USER(user_id)
+        CREATE TABLE IF NOT EXISTS REQUESTBLOODFORM (
+        request_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        bloodtype VARCHAR(3) NOT NULL,
+        quantityneeded INTEGER NOT NULL,
+        reason TEXT NOT NULL,
+        patient_name VARCHAR,
+        request_date DATE DEFAULT CURRENT_DATE,
+        FOREIGN KEY (user_id) REFERENCES USER(user_id)
         );
-    ''')
+      ''')      
 
-    # Step 2: Copy data from the old 'BLOODSTOCK' table to the new one
     cursor.execute('''
-        INSERT INTO new_bloodstock (bloodtype, quantityeach, totalquantity, donor_id)
-        SELECT bloodtype, quantityeach, totalquantity, donor_id FROM BLOODSTOCK;
-    ''')
-
-    # Step 3: Drop the old 'BLOODSTOCK' table
-    cursor.execute('DROP TABLE IF EXISTS BLOODSTOCK')
-
-    # Step 4: Rename the new table to 'BLOODSTOCK'
-    cursor.execute('ALTER TABLE new_bloodstock RENAME TO BLOODSTOCK')
+        CREATE TABLE IF NOT EXISTS FORMDONATION (
+            donation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            bloodtype VARCHAR(3) NOT NULL,
+            disease TEXT,
+            donor_name VARCHAR,
+            donation_date DATE DEFAULT CURRENT_DATE,
+            FOREIGN KEY (user_id) REFERENCES USER(user_id)
+        );
+      ''')      
+        
+    # cursor.execute('DROP TABLE REQUESTFORM')
+    # cursor.execute('DROP TABLE DONATIONFORM')
+    # cursor.execute('DROP TABLE FORMREQUEST')
+    # cursor.execute('DROP TABLE new_bloodstock')
 
 
 # Commit changes and close the connection
