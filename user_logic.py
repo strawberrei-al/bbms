@@ -43,32 +43,33 @@ def register_user(name, age, bloodtype, address, username, password):
 def login(username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
-    
+
+    try:
         # Fetch stored hashed password and user_id for the username
-    cursor.execute("SELECT password, user_id FROM LOGIN WHERE username = ?", (username,))
-    record = cursor.fetchone()
+        cursor.execute("SELECT password, user_id FROM LOGIN WHERE username = ?", (username,))
+        record = cursor.fetchone()
 
-    if record:
-        stored_hashed_password, user_id = record
+        if record:
+            stored_hashed_password, user_id = record
 
-        # Compare the entered password with the stored hashed password
-        if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
-            # Fetch the user's role based on user_id
-            cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
-            role_record = cursor.fetchone()
+            # Compare the entered password with the stored hashed password
+            if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+                # Fetch the user's role based on user_id
+                cursor.execute("SELECT role FROM USER WHERE user_id = ?", (user_id,))
+                role_record = cursor.fetchone()
 
-            if role_record:
-                role = role_record[0]
-                conn.close()
-                return True, role  # Login successful, return role
+                if role_record:
+                    role = role_record[0]
+                    return True, role, user_id  # Login successful, return role
+                else:
+                    return False, "Role not found."  # No role associated with user_id
             else:
-                conn.close()
-                return False, "Role not found."  # No role associated with user_id
+                return False, "Incorrect password."  # Password mismatch
         else:
-            conn.close()
-            return False, "Incorrect password."  # Password mismatch
-    else:
+            return False, "Username not found."  # No such username in the database
+    except Exception as e:
+        return False, f"Database error: {str(e)}", None  # Handle unexpected database errors
+    finally:
         conn.close()
-        return False, "Username not found."  # No such username in the database
     
     
