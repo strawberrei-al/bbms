@@ -140,6 +140,11 @@ def create_tables():
     # cursor.execute("ALTER TABLE USER ADD COLUMN contact VARCHAR")
     # cursor.execute("ALTER TABLE USER ADD COLUMN email VARCHAR")
 
+# Add 'status' column to DONATIONFORM
+    # cursor.execute("ALTER TABLE FORMDONATION ADD COLUMN status TEXT DEFAULT 'Pending'")
+    
+    # # Add 'status' column to REQUESTFORM
+    # cursor.execute("ALTER TABLE REQUESTBLOODFORM ADD COLUMN status TEXT DEFAULT 'Pending'")
 # Commit changes and close the connection
     conn.commit()
     conn.close()
