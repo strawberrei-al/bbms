@@ -2,6 +2,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Import PIL
 from user_logic import register_user, login
+from user_ui import donationform_ui, request_blood, view_history, notification, logout
 
 # Set up CustomTkinter appearance
 ctk.set_appearance_mode("Light")
@@ -23,14 +24,27 @@ background_image_tk = ImageTk.PhotoImage(background_image)
 background_label = ctk.CTkLabel(root, image=background_image_tk, text="")
 background_label.place(relwidth=1, relheight=1)
 
-def user_menu():
+def user_menu(user_id):
     user_window = ctk.CTkToplevel(root)
-    user_window.geometry("400x500")
+    user_window.geometry("400x600")
     user_window.title("USER MENU")
+    ctk.CTkLabel(user_window, text="WELCOME!", font=("Arial", 20)).pack(pady=10)
 
-    ctk.CTkLabel(user_window, text="Welcome to the User Menu", font=("Arial", 20)).pack(pady=20)
+    account_header = ctk.CTkLabel(user_window, text="Donate Blood, to save a life!", font=("Arial", 18, "bold"))
+    account_header.pack(pady=(10, 5))
 
-    ctk.CTkButton(user_window, text="Logout", command=user_window.destroy).pack(pady=10)
+    donate_button = ctk.CTkButton(user_window, text="Donate Blood", command=lambda: donationform_ui(user_id), corner_radius=20, fg_color="#880808", width=200, height=50)
+    request_button = ctk.CTkButton(user_window, text="Request Blood", command=lambda: request_blood(user_id), corner_radius=20, fg_color="#AA4A44", width=200, height=50)
+    history_button = ctk.CTkButton(user_window, text="View History", command=lambda: view_history(), corner_radius=20, fg_color="#6E260E", width=200, height=50)
+    notif_button = ctk.CTkButton(user_window, text="Notification", command=lambda: notification(), corner_radius=20, fg_color="#E97451", width=200, height=50)
+    logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: logout, corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
+
+    # Button Placement
+    donate_button.place(relx=0.5, rely=0.3, anchor="center")
+    request_button.place(relx=0.5, rely=0.4, anchor="center")
+    history_button.place(relx=0.5, rely=0.5, anchor="center")
+    notif_button.place(relx=0.5, rely=0.6, anchor="center")
+    logout_button.place(relx=0.5, rely=0.7, anchor="center")
 
 
 
@@ -38,6 +52,9 @@ def admin_menu():
     admin_window = ctk.CTkToplevel(root)
     admin_window.geometry("400x500")
     admin_window.title("ADMIN MENU")
+    
+    ctk.CTkLabel(admin_window, text="Welcome to the User Menu", font=("Arial", 20)).pack(pady=20)
+
 
 # Function for User Login Form (as an example)
 def user_login():
@@ -133,10 +150,9 @@ def login_form(role):
         username = username_entry.get()
         password = password_entry.get()
 
-
         try:
             # Call user_login from user_logic.py to validate credentials
-            login_successful, user_role = login(username, password)
+            login_successful, user_role, user_id = login(username, password)
 
             if login_successful:
                 if user_role.lower() == role.lower():  # Match role (case-insensitive)
@@ -147,23 +163,29 @@ def login_form(role):
                     if role.lower() == "admin":
                         admin_menu()
                     elif role.lower() == "user":
-                        user_menu()
+                        user_menu(user_id)
                 else:
                     messagebox.showerror("Error", f"This account is not a {role} account.")
+                    username_entry.delete(0,"end")
+                    password_entry.delete(0, "end")
             else:
                 messagebox.showerror("Error", user_role)  # user_role contains the error message
+                username_entry.delete(0,"end")
+                password_entry.delete(0, "end")
 
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
+            username_entry.delete(0,"end")
+            password_entry.delete(0, "end")
 
 
     ctk.CTkButton(login_window, text="Submit", command=submit_login).pack(pady=10)
 
 
 # Adding Buttons to Main Page
-user_login_button = ctk.CTkButton(root, text="User Login", command=user_login, corner_radius=20, fg_color="#1E90FF", width=200, height=50)
-admin_login_button = ctk.CTkButton(root, text="Admin Login", command=admin_login, corner_radius=20, fg_color="#32CD32", width=200, height=50)
-register_button = ctk.CTkButton(root, text="Register", command=register_form, corner_radius=20, fg_color="#FFA07A", width=200, height=50)
+user_login_button = ctk.CTkButton(root, text="User Login", command=user_login, corner_radius=20, fg_color="#8B0000", width=200, height=50)
+admin_login_button = ctk.CTkButton(root, text="Admin Login", command=admin_login, corner_radius=20, fg_color="#7B1818", width=200, height=50)
+register_button = ctk.CTkButton(root, text="Register", command=register_form, corner_radius=20, fg_color="#9A2A2A", width=200, height=50)
 
 # Button Placement
 user_login_button.place(relx=0.5, rely=0.4, anchor="center")
