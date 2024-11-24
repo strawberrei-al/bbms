@@ -40,7 +40,7 @@ def register_user(name, age, bloodtype, address, username, password):
     conn.close()
 
 
-def user_login(username, password):
+def login(username, password):
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
     
