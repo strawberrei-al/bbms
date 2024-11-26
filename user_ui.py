@@ -1,5 +1,6 @@
-from tkinter import messagebox, ttk
+from tkinter import Image, messagebox, ttk
 import customtkinter as ctk
+from ui import main_page
 from user_functions import blood_donation, blood_request, fetch_combined_history
 
 def donationform_ui(user_id):
@@ -122,20 +123,21 @@ def request_blood(user_id):
 #         messagebox.showinfo("No History", "No history to display.")
 #         return
 
-# # Create new window
+#     # Create new window
 #     history_window = ctk.CTkToplevel()
-#     history_window.geometry("600x400")
+#     history_window.geometry("800x400")
 #     history_window.title("Your History")
 
-# # Table headers
-#     headers = ["Transaction Type", "Blood Type", "Name", "Disease", "Quantity", "Status", "Date"]
+#     # Table headers
+#     headers = ["Type", "Name", "Blood Type", "Detail", "Status", "Date"]
 #     for col, header in enumerate(headers):
 #         label = ctk.CTkLabel(history_window, text=header, font=("Arial", 12, "bold"))
 #         label.grid(row=0, column=col, padx=5, pady=5)
 
 #     # Add rows to the table
 #     for row, record in enumerate(history, start=1):
-#         for col, value in enumerate(record.values()):
+#         for col, key in enumerate(headers):
+#             value = record[key]  # Match keys to dictionary
 #             label = ctk.CTkLabel(history_window, text=value, font=("Arial", 10))
 #             label.grid(row=row, column=col, padx=5, pady=5)
 
@@ -149,7 +151,7 @@ def display_history(user_id):
     # Fetch history
     history = fetch_combined_history(user_id)
     if not history:
-        messagebox.showinfo("No History", "No history to display.")
+        ctk.CTkMessagebox.show_info("No History", "No history to display.")
         return
 
     # Create new window
@@ -157,27 +159,55 @@ def display_history(user_id):
     history_window.geometry("800x400")
     history_window.title("Your History")
 
+    # # Set background image (optional)
+    # background_image = ctk.CTkImage(Image.open("background.png"), size=(800, 400))
+    # bg_label = ctk.CTkLabel(history_window, image=background_image, text="")
+    # bg_label.place(relwidth=1, relheight=1)
+
+    # Frame for the table
+    table_frame = ctk.CTkFrame(history_window, fg_color="white", corner_radius=10)
+    table_frame.place(relx=0.05, rely=0.1, relwidth=0.9, relheight=0.8)  # Centered
+
     # Table headers
     headers = ["Type", "Name", "Blood Type", "Detail", "Status", "Date"]
     for col, header in enumerate(headers):
-        label = ctk.CTkLabel(history_window, text=header, font=("Arial", 12, "bold"))
-        label.grid(row=0, column=col, padx=5, pady=5)
+        header_label = ctk.CTkLabel(
+            table_frame,
+            text=header,
+            font=("Arial", 14, "bold"),
+            fg_color="#E8E8E8",
+            anchor="center",
+            width=20,
+        )
+        header_label.grid(row=0, column=col, padx=2, pady=2, sticky="nsew")
 
     # Add rows to the table
     for row, record in enumerate(history, start=1):
         for col, key in enumerate(headers):
-            value = record[key]  # Match keys to dictionary
-            label = ctk.CTkLabel(history_window, text=value, font=("Arial", 10))
-            label.grid(row=row, column=col, padx=5, pady=5)
+            value = record[key]
+            cell_label = ctk.CTkLabel(
+                table_frame,
+                text=value,
+                font=("Arial", 12),
+                anchor="center",
+                width=20,
+            )
+            cell_label.grid(row=row, column=col, padx=2, pady=2, sticky="nsew")
 
+    # Make columns expand
+    for col in range(len(headers)):
+        table_frame.grid_columnconfigure(col, weight=1)
 
+    # Add vertical and horizontal scrollbars (optional)
+    # Scrollbars can improve navigation if you have a large history
 
 def notification():
     pass
 
 
-def logout():
-    pass # balik ra ni dayon sa login/register page
+def logout(user_menu):
+    user_menu.destroy()
+    main_page() # balik ra ni dayon sa login/register page
 
 # diri ang mga ui guro, ayaw nalang sa ang functions.
 # lahi na nga file ang functions. Pwede ra siya sa user_logic or what.
