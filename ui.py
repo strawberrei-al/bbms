@@ -1,6 +1,6 @@
 from tkinter import messagebox
 import customtkinter as ctk
-from PIL import Image  # Import PIL
+from PIL import Image 
 from user_logic import register_user, login
 
 
@@ -75,7 +75,7 @@ def user_menu(user_id):
     request_button = ctk.CTkButton(user_window, text="Request Blood", command=lambda: request_blood(user_id), corner_radius=20, fg_color="#AA4A44", width=200, height=50)
     history_button = ctk.CTkButton(user_window, text="View History", command=lambda: display_history(user_id), corner_radius=20, fg_color="#6E260E", width=200, height=50)
     notif_button = ctk.CTkButton(user_window, text="Notification", command=lambda: notification(), corner_radius=20, fg_color="#E97451", width=200, height=50)
-    logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: logout(user_window), corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
+    logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: userlogout(user_window), corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
 
     # Adding Background Image to the Label
     logo_label = ctk.CTkLabel(user_window, image=logo_image_ctk, text="", bg_color="#FFF3F3")
@@ -89,24 +89,77 @@ def user_menu(user_id):
     logout_button.place(relx=0.5, rely=0.86, anchor="center")
 
 
-def admin_menu():
+def admin_menu(user_id):
+    from admin_ui import bloodstock_ui, donations_ui, requests_ui, display_allhistory, view_userlist
+
+    import sqlite3  
+
+    conn = sqlite3.connect("blood_bank.db") 
+    cursor = conn.cursor()
+
+    # Fetch the user's name using the user_id
+    cursor.execute("SELECT name FROM USER WHERE user_id=?", (user_id,))
+    user_name = cursor.fetchone()
+
+    # Check if user exists
+    if user_name:
+        user_name = user_name[0]
+    else:
+        user_name = "Admin"
+
+    menubackground_image = Image.open("menu_bg.png")
+    menubackground_image_ctk = ctk.CTkImage(menubackground_image, size=(400, 600))
+
+    logo_image = Image.open("logo.png")
+    logo_image_resized = logo_image.resize((300, 100))  # Resize logo to 300x100 pixels
+    logo_image_ctk = ctk.CTkImage(logo_image_resized, size=(300, 100))
+
     admin_window = ctk.CTkToplevel()
     admin_window.geometry("400x600")
     admin_window.title("ADMIN MENU")
     
-    ctk.CTkLabel(admin_window, text="Welcome, Admin!", font=("Arial", 20)).pack(pady=20)
+    menubackground_label = ctk.CTkLabel(admin_window, image=menubackground_image_ctk, text="")
+    menubackground_label.pack(fill="both", expand=True)
+    
+    ctk.CTkLabel(admin_window, text=f"Welcome, {user_name}!", font=("Arial", 20), bg_color="#FFF3F3").place(relx=0.5, rely=0.10, anchor="center")
+    
+    # account_header = ctk.CTkLabel(admin_window, text="Let’s create a world where\nblood is never in short supply.", font=("Arial", 18, "bold"), bg_color="#FFF3F3")
+    # account_header.place(relx=0.5, rely=0.18, anchor="center")
 
-def logout(user_window):
+    bloodstock_button = ctk.CTkButton(admin_window, text="Blood Stock", command=lambda: bloodstock_ui(), corner_radius=20, fg_color="#C51E09", width=200, height=50)
+    donation_button = ctk.CTkButton(admin_window, text="Donations", command=lambda: donations_ui(), corner_radius=20, fg_color="#C82024", width=200, height=50)
+    requests_button = ctk.CTkButton(admin_window, text="Requests", command=lambda: requests_ui(), corner_radius=20, fg_color="#FE332E", width=200, height=50)
+    allhistory_button = ctk.CTkButton(admin_window, text="All History", command=lambda: display_allhistory(), corner_radius=20, fg_color="#F73644", width=200, height=50)
+    userlist_button = ctk.CTkButton(admin_window, text="User List", command=lambda: view_userlist(), corner_radius=20, fg_color="#E62A47", width=200, height=50)
+    logout_button = ctk.CTkButton(admin_window, text="Logout", command=lambda: adminlogout(admin_window), corner_radius=20, fg_color="#FE5481", width=200, height=50)
+
+    # Adding Background Image to the Label
+    logo_label = ctk.CTkLabel(admin_window, image=logo_image_ctk, text="", bg_color="#FFF3F3")
+    logo_label.place(relx=0.5, rely=0.22, anchor="center")
+
+    # Button Placement
+    bloodstock_button.place(relx=0.5, rely=0.36, anchor="center")
+    donation_button.place(relx=0.5, rely=0.46, anchor="center")
+    requests_button.place(relx=0.5, rely=0.56, anchor="center")
+    allhistory_button.place(relx=0.5, rely=0.66, anchor="center")
+    userlist_button.place(relx=0.5, rely=0.76, anchor="center")
+    logout_button.place(relx=0.5, rely=0.86, anchor="center")
+
+
+def userlogout(user_window):
     user_window.destroy()
     main_page() # unsaon pagbalik sa mainpage (logins)
 
+def adminlogout(admin_window):
+    admin_window.destroy()
+    main_page() # unsaon pagbalik sa mainpage (logins)
 
-# Function for User Login Form (as an example)
+# Function for User Login Form 
 def user_login(root):
     root.withdraw()
     login_form("User")
 
-# Function for Admin Login Form (as an example)
+# Function for Admin Login Form 
 def admin_login(root):
     root.withdraw()
     login_form("Admin")
@@ -187,7 +240,7 @@ def register_form():
 
     ctk.CTkButton(form_window, text="Submit", command=submit_registration).pack(pady=10)
 
-# Function to Create Login Form (Reused for User/Admin)
+# Function to Create Login Form
 def login_form(role):
     login_window = ctk.CTkToplevel()
     login_window.geometry("400x300")
@@ -222,7 +275,7 @@ def login_form(role):
 
                     # Direct to the respective menu
                     if role.lower() == "admin":
-                        admin_menu()
+                        admin_menu(user_id)
                     elif role.lower() == "user":
                         user_menu(user_id)
                 else:

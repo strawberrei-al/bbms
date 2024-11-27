@@ -1,6 +1,5 @@
 from tkinter import Image, messagebox, ttk
 import customtkinter as ctk
-from ui import main_page
 from user_functions import blood_donation, blood_request, fetch_combined_history
 
 def donationform_ui(user_id):
@@ -205,9 +204,9 @@ def notification():
     pass
 
 
-def logout(user_menu):
-    user_menu.destroy()
-    main_page() # balik ra ni dayon sa login/register page
+# def logout(user_menu):
+#     user_menu.destroy()
+#     main_page() # balik ra ni dayon sa login/register page
 
 # diri ang mga ui guro, ayaw nalang sa ang functions.
 # lahi na nga file ang functions. Pwede ra siya sa user_logic or what.
