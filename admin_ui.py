@@ -199,10 +199,6 @@ def bloodstock_ui():
 
 # Run the Blood Stock UI
 # bloodstock_ui()
-# open_update_window()
-
-def donations_ui():
-    pass
 
 
 def requests_ui():

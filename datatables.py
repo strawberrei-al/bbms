@@ -51,6 +51,16 @@ sql_queries = [
         total_added_ml INTEGER DEFAULT 0
         );
     """,
+    """
+    CREATE TABLE IF NOT EXISTS NOTIFICATIONS (
+        notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        donation_id INTEGER,
+        remarks TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES USERS(user_id)
+    )
+    """,
 ]
 
 # Database connection function
@@ -65,6 +75,8 @@ def create_tables():
     # Execute the other queries
     for query in sql_queries:
         cursor.execute(query)
+    
+    cursor.execute("ALTER TABLE NOTIFICATIONS ADD COLUMN request_id INTEGER;")
 
     # Insert the 8 standard blood types (only if the table is empty)
     # blood_types = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]

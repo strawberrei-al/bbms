@@ -90,7 +90,11 @@ def user_menu(user_id):
 
 
 def admin_menu(user_id):
-    from admin_ui import bloodstock_ui, donations_ui, requests_ui, display_allhistory, view_userlist
+    from admin_ui import bloodstock_ui
+    from admin_donationlist import donations_ui
+    from admin_requestlist import requests_ui
+    from admin_viewallhistory import display_allhistory
+    from admin_viewusers import view_userlist
 
     import sqlite3  
 
