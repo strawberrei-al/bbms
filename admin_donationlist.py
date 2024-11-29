@@ -141,4 +141,4 @@ def donations_ui():
 
     root.mainloop()
 
-donations_ui()
+# donations_ui()

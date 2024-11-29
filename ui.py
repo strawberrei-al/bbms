@@ -34,7 +34,8 @@ def main_page():
 ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("green")
 
-def user_menu(user_id):
+
+def user_menu(user_id, root):
     from user_ui import donationform_ui, request_blood, display_history, notification
 
     import sqlite3  
@@ -74,8 +75,8 @@ def user_menu(user_id):
     donate_button = ctk.CTkButton(user_window, text="Donate Blood", command=lambda: donationform_ui(user_id), corner_radius=20, fg_color="#880808", width=200, height=50)
     request_button = ctk.CTkButton(user_window, text="Request Blood", command=lambda: request_blood(user_id), corner_radius=20, fg_color="#AA4A44", width=200, height=50)
     history_button = ctk.CTkButton(user_window, text="View History", command=lambda: display_history(user_id), corner_radius=20, fg_color="#6E260E", width=200, height=50)
-    notif_button = ctk.CTkButton(user_window, text="Notification", command=lambda: notification(), corner_radius=20, fg_color="#E97451", width=200, height=50)
-    logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: userlogout(user_window), corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
+    notif_button = ctk.CTkButton(user_window, text="Notification", command=lambda: notification(user_id), corner_radius=20, fg_color="#E97451", width=200, height=50)
+    logout_button = ctk.CTkButton(user_window, text="Logout", command=lambda: (user_window.destroy(),root.deiconify()), corner_radius=20, fg_color="#EE4B2B", width=200, height=50)
 
     # Adding Background Image to the Label
     logo_label = ctk.CTkLabel(user_window, image=logo_image_ctk, text="", bg_color="#FFF3F3")
@@ -89,12 +90,12 @@ def user_menu(user_id):
     logout_button.place(relx=0.5, rely=0.86, anchor="center")
 
 
-def admin_menu(user_id):
+def admin_menu(user_id, root):
     from admin_ui import bloodstock_ui
     from admin_donationlist import donations_ui
     from admin_requestlist import requests_ui
     from admin_viewallhistory import display_allhistory
-    from admin_viewusers import view_userlist
+    from admin_viewusers import show_users
 
     import sqlite3  
 
@@ -134,8 +135,8 @@ def admin_menu(user_id):
     donation_button = ctk.CTkButton(admin_window, text="Donations", command=lambda: donations_ui(), corner_radius=20, fg_color="#C82024", width=200, height=50)
     requests_button = ctk.CTkButton(admin_window, text="Requests", command=lambda: requests_ui(), corner_radius=20, fg_color="#FE332E", width=200, height=50)
     allhistory_button = ctk.CTkButton(admin_window, text="All History", command=lambda: display_allhistory(), corner_radius=20, fg_color="#F73644", width=200, height=50)
-    userlist_button = ctk.CTkButton(admin_window, text="User List", command=lambda: view_userlist(), corner_radius=20, fg_color="#E62A47", width=200, height=50)
-    logout_button = ctk.CTkButton(admin_window, text="Logout", command=lambda: adminlogout(admin_window), corner_radius=20, fg_color="#FE5481", width=200, height=50)
+    userlist_button = ctk.CTkButton(admin_window, text="User List", command=lambda: show_users(), corner_radius=20, fg_color="#E62A47", width=200, height=50)
+    logout_button = ctk.CTkButton(admin_window, text="Logout", command=lambda: (admin_window.destroy(),root.deiconify()), corner_radius=20, fg_color="#FE5481", width=200, height=50)
 
     # Adding Background Image to the Label
     logo_label = ctk.CTkLabel(admin_window, image=logo_image_ctk, text="", bg_color="#FFF3F3")
@@ -150,23 +151,15 @@ def admin_menu(user_id):
     logout_button.place(relx=0.5, rely=0.86, anchor="center")
 
 
-def userlogout(user_window):
-    user_window.destroy()
-    main_page() # unsaon pagbalik sa mainpage (logins)
-
-def adminlogout(admin_window):
-    admin_window.destroy()
-    main_page() # unsaon pagbalik sa mainpage (logins)
-
 # Function for User Login Form 
 def user_login(root):
     root.withdraw()
-    login_form("User")
+    login_form("User",root)
 
 # Function for Admin Login Form 
 def admin_login(root):
     root.withdraw()
-    login_form("Admin")
+    login_form("Admin",root)
 
 # Function for Registration Form
 def register_form():
@@ -245,7 +238,7 @@ def register_form():
     ctk.CTkButton(form_window, text="Submit", command=submit_registration).pack(pady=10)
 
 # Function to Create Login Form
-def login_form(role):
+def login_form(role,root):
     login_window = ctk.CTkToplevel()
     login_window.geometry("400x300")
     login_window.title(f"{role} Login")
@@ -279,9 +272,9 @@ def login_form(role):
 
                     # Direct to the respective menu
                     if role.lower() == "admin":
-                        admin_menu(user_id)
+                        admin_menu(user_id,root)
                     elif role.lower() == "user":
-                        user_menu(user_id)
+                        user_menu(user_id,root)
                 else:
                     messagebox.showerror("Error", f"This account is not a {role} account.")
                     username_entry.delete(0,"end")

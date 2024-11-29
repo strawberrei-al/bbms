@@ -1,3 +1,4 @@
+import sqlite3
 from tkinter import Image, messagebox, ttk
 import customtkinter as ctk
 from user_functions import blood_donation, blood_request, fetch_combined_history
@@ -109,37 +110,6 @@ def request_blood(user_id):
     ctk.CTkButton(window, text="Submit", command=submit_request).pack(pady=10)
 
 
-# def display_history(user_id):
-#     """
-#     Displays the combined history of donations and requests in a new window.
-
-#     Args:
-#         user_id (int): The ID of the user.
-#     """
-#     # Fetch history
-#     history = fetch_combined_history(user_id)
-#     if not history:
-#         messagebox.showinfo("No History", "No history to display.")
-#         return
-
-#     # Create new window
-#     history_window = ctk.CTkToplevel()
-#     history_window.geometry("800x400")
-#     history_window.title("Your History")
-
-#     # Table headers
-#     headers = ["Type", "Name", "Blood Type", "Detail", "Status", "Date"]
-#     for col, header in enumerate(headers):
-#         label = ctk.CTkLabel(history_window, text=header, font=("Arial", 12, "bold"))
-#         label.grid(row=0, column=col, padx=5, pady=5)
-
-#     # Add rows to the table
-#     for row, record in enumerate(history, start=1):
-#         for col, key in enumerate(headers):
-#             value = record[key]  # Match keys to dictionary
-#             label = ctk.CTkLabel(history_window, text=value, font=("Arial", 10))
-#             label.grid(row=row, column=col, padx=5, pady=5)
-
 def display_history(user_id):
     """
     Displays the combined history of donations and requests in a new window.
@@ -200,8 +170,132 @@ def display_history(user_id):
     # Add vertical and horizontal scrollbars (optional)
     # Scrollbars can improve navigation if you have a large history
 
-def notification():
-    pass
+
+def notification(user_id):
+    conn = sqlite3.connect("blood_bank.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT notification_id, remarks, timestamp, status FROM NOTIFICATIONS WHERE user_id = ?
+    """, (user_id,))
+    notifications = cursor.fetchall()
+    conn.close()
+
+    if not notifications:
+        messagebox.showinfo("No Notifications", "You have no new notifications.")
+        return
+
+    # Create a new window for notifications
+    notif_window = ctk.CTkToplevel()
+    notif_window.geometry("500x300")
+    notif_window.title("Your Notifications")
+
+    # Configure grid to center the table
+    notif_window.grid_propagate(False)
+    notif_window.grid_rowconfigure(0, weight=1)  # Top spacer
+    notif_window.grid_rowconfigure(1, weight=0)  # Table content
+    notif_window.grid_rowconfigure(2, weight=1)  # Bottom spacer
+    notif_window.grid_columnconfigure(0, weight=1)  # Left spacer
+    notif_window.grid_columnconfigure(1, weight=0)  # Table content
+    notif_window.grid_columnconfigure(2, weight=1)  # Right spacer
+
+    # Create a frame for the table
+    table_frame = ctk.CTkFrame(notif_window, corner_radius=10)
+    table_frame.grid(row=1, column=1, padx=20, pady=20)
+
+    # Table headers
+    headers = ["ID", "Date", "Status", "Message"]
+    for col, header in enumerate(headers):
+        label = ctk.CTkLabel(table_frame, text=header, font=("Arial", 12, "bold"), anchor="center")
+        label.grid(row=0, column=col, padx=10, pady=5)
+
+    # Add rows to the table
+    for row_idx, notif in enumerate(notifications, start=1):
+        notif_id, message, date, status = notif
+
+        # Truncated message for preview
+        message_preview = message[:40] + "..." if len(message) > 40 else message
+
+        # Add notification details to the table
+        ctk.CTkLabel(table_frame, text=notif_id, font=("Arial", 10), anchor="center").grid(row=row_idx, column=0, padx=10, pady=5)
+        ctk.CTkLabel(table_frame, text=date, font=("Arial", 10), anchor="center").grid(row=row_idx, column=1, padx=10, pady=5)
+        ctk.CTkLabel(table_frame, text=status, font=("Arial", 10), anchor="center").grid(row=row_idx, column=2, padx=10, pady=5)
+
+        # Clickable row for message preview
+        clickable_label = ctk.CTkLabel(table_frame, text=message_preview, font=("Arial", 10), anchor="w", cursor="hand2")
+        clickable_label.grid(row=row_idx, column=3, padx=10, pady=5, sticky="w")
+        clickable_label.bind("<Button-1>", lambda e, n_id=notif_id: open_notification_details(n_id, notif_window))
+
+    # Add "Delete All" button, aligned to the top-right of the table frame
+    delete_all_button = ctk.CTkButton(table_frame, text="Delete All", command=lambda: delete_all_notifs(user_id), fg_color="#880808")
+    delete_all_button.grid(row=0, column=len(headers) - 1, sticky="e", padx=5, pady=5)
+
+
+def open_notification_details(notification_id, parent_window):
+
+    parent_window.withdraw()
+    # Fetch notification details
+    conn = sqlite3.connect("blood_bank.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT remarks, timestamp, status FROM NOTIFICATIONS WHERE notification_id = ?
+    """, (notification_id,))
+    notification = cursor.fetchone()
+    conn.close()
+
+    if not notification:
+        messagebox.showerror("Error", "Notification not found.")
+        return
+
+    message, date, status = notification
+
+    # Create a new window for the notification details
+    detail_window = ctk.CTkToplevel()
+    detail_window.geometry("500x300")
+    detail_window.title("Notification Details")
+
+    # Display details
+    ctk.CTkLabel(detail_window, text=f"Date: {date}", font=("Arial", 12, "bold")).pack(pady=5)
+    ctk.CTkLabel(detail_window, text=f"Status: {status}", font=("Arial", 12)).pack(pady=5)
+    ctk.CTkLabel(detail_window, text="Message:", font=("Arial", 12, "bold")).pack(pady=5)
+
+    # Justified format for the message
+    message_text = ctk.CTkTextbox(detail_window, width=400, height=100, wrap="word")
+    message_text.insert("1.0", message)
+    message_text.configure(state="disabled")  # Make it read-only
+    message_text.pack(pady=10)
+
+    # Add Delete and Return buttons
+    ctk.CTkButton(detail_window, text="Delete", command=lambda: delete_notification(notification_id, detail_window), fg_color="#880808").pack(side="left", padx=20, pady=10)
+    ctk.CTkButton(detail_window, text="Return", command=lambda:(detail_window.destroy(), parent_window.deiconify()), fg_color="#6E260E").pack(side="right", padx=20, pady=10)
+
+
+def delete_all_notifs(user_id):
+    conn = sqlite3.connect("blood_bank.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM NOTIFICATIONS WHERE user_id = ?", (user_id,))
+        conn.commit()
+        messagebox.showinfo("Deleted", "All notifications deleted successfully.")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to delete notifications: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
+
+
+def delete_notification(notification_id, window):
+    conn = sqlite3.connect("blood_bank.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM NOTIFICATIONS WHERE notification_id = ?", (notification_id,))
+        conn.commit()
+        messagebox.showinfo("Deleted", "Notification deleted successfully.")
+        window.destroy()
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to delete notification: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
 
 
 # def logout(user_menu):

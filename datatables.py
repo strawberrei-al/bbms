@@ -76,7 +76,7 @@ def create_tables():
     for query in sql_queries:
         cursor.execute(query)
     
-    cursor.execute("ALTER TABLE NOTIFICATIONS ADD COLUMN request_id INTEGER;")
+    # cursor.execute("ALTER TABLE NOTIFICATIONS ADD COLUMN status TEXT DEFAULT 'unread';")
 
     # Insert the 8 standard blood types (only if the table is empty)
     # blood_types = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
