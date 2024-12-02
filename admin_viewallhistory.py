@@ -1,6 +1,6 @@
 import sqlite3
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import Canvas, Scrollbar, messagebox
 
 def display_allhistory():
     """
@@ -15,7 +15,7 @@ def display_allhistory():
         return
 
     # Create new window
-    history_window = ctk.CTkToplevel()
+    history_window = ctk.CTkToplevel(fg_color="#faf0e6")
     history_window.geometry("800x400")
     history_window.title("All History")
 
@@ -29,9 +29,11 @@ def display_allhistory():
         header_label = ctk.CTkLabel(
             table_frame,
             text=header,
+            text_color="white",
             font=("Arial", 14, "bold"),
-            fg_color="#E8E8E8",
+            fg_color="#ae0c00",
             anchor="center",
+            corner_radius=5,
             width=20,
         )
         header_label.grid(row=0, column=col, padx=2, pady=2, sticky="nsew")
@@ -45,7 +47,7 @@ def display_allhistory():
                 text=value,
                 font=("Arial", 12),
                 anchor="center",
-                width=20,
+                corner_radius=5
             )
             cell_label.grid(row=row, column=col, padx=2, pady=2, sticky="nsew")
 

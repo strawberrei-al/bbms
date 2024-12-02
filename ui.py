@@ -20,7 +20,7 @@ def main_page():
     # Buttons
     user_login_button = ctk.CTkButton(root, text="User Login", command=lambda: user_login(root), corner_radius=20, bg_color="#FDDADA", fg_color="#8B0000", width=200, height=50)
     admin_login_button = ctk.CTkButton(root, text="Admin Login", command=lambda: admin_login(root), corner_radius=20, bg_color="#FDDADA", fg_color="#7B1818", width=200, height=50)
-    register_button = ctk.CTkButton(root, text="Register", command=lambda: register_form(root), corner_radius=20, bg_color="#FDDADA", fg_color="#9A2A2A", width=200, height=50)
+    register_button = ctk.CTkButton(root, text="Register", command=lambda: register_form(), corner_radius=20, bg_color="#FDDADA", fg_color="#9A2A2A", width=200, height=50)
 
     # Button Placement
     user_login_button.place(relx=0.5, rely=0.4, anchor="center")

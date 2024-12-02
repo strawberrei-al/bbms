@@ -56,29 +56,6 @@ def blood_request(user_id, blood_type, quantity, patient_name, reason):
     finally:
         conn.close()
 
-# def view_history(user_id, table_name):
-#     """
-#     Fetches all records for a given user from a specified table.
-
-#     Args:
-#         user_id (int): The ID of the user.
-#         table_name (str): The name of the table ('DONATIONFORM' or 'REQUESTFORM').
-
-#     Returns:
-#         list of tuples: The fetched records.
-#     """
-#     conn = sqlite3.connect("blood_bank.db")
-#     cursor = conn.cursor()
-    
-#     try:
-#         cursor.execute(f"SELECT * FROM {table_name} WHERE user_id = ?", (user_id,))
-#         records = cursor.fetchall()
-#         return records
-#     except Exception as e:
-#         print(f"Error fetching history: {e}")
-#         return []
-#     finally:
-#         conn.close()
 
 def fetch_combined_history(user_id):
     """

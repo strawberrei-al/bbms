@@ -15,18 +15,24 @@ def fetch_donations():
         print(f"Error fetching donations: {e}")
         return[]
 
+def return_to_list(window,main):
+        """Return to the main donation list."""
+        window.destroy()
+        main.deiconify()
 
-def open_donation_details(donation):
+def open_donation_details(donation,root):
     """Open the details page for the selected donation."""
     donation_id, user_id, bloodtype, disease, donation_date, donor_name, status = donation
-
+    
+    root.withdraw()
+    
     # Creating a new window to show donation details
-    details_window = ctk.CTkToplevel()
+    details_window = ctk.CTkToplevel(fg_color="white")
     details_window.title("Donation Details")
     details_window.geometry("600x400")
 
     # Create a frame that will contain all the widgets, and center it
-    main_frame = ctk.CTkFrame(details_window)
+    main_frame = ctk.CTkFrame(details_window, fg_color="#faf0e6")
     main_frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
 
     # Configure the grid to expand in all directions
@@ -57,7 +63,7 @@ def open_donation_details(donation):
     main_frame.grid_columnconfigure(2, weight=1)  # Make column 2 expand
 
     # Button Frame
-    button_frame = ctk.CTkFrame(main_frame)
+    button_frame = ctk.CTkFrame(main_frame, fg_color="#faf0e6")
     button_frame.grid(row=4, column=0, columnspan=3, pady=10, sticky="nsew")
 
     # Configure row and column in button_frame to expand
@@ -97,13 +103,13 @@ def open_donation_details(donation):
 
         details_window.destroy()
 
-    accept_button = ctk.CTkButton(button_frame, text="Accept", command=lambda: send_response("Accepted"))
+    accept_button = ctk.CTkButton(button_frame, text="Accept", fg_color="#ae0c00", command=lambda: (send_response("Accepted"), return_to_list(details_window,root)))
     accept_button.grid(row=0, column=0, padx=10, pady=20)
 
-    reject_button = ctk.CTkButton(button_frame, text="Reject", command=lambda: send_response("Rejected"))
+    reject_button = ctk.CTkButton(button_frame, text="Reject", fg_color="#ae0c00", command=lambda: (send_response("Rejected"), return_to_list(details_window,root)))
     reject_button.grid(row=0, column=1, padx=10, pady=20)
 
-    return_button = ctk.CTkButton(button_frame, text="Return", command=details_window.destroy)
+    return_button = ctk.CTkButton(button_frame, text="Return", fg_color="#ae0c00", command=lambda: return_to_list(details_window,root))
     return_button.grid(row=0, column=2, padx=10, pady=20)
 
 
@@ -121,7 +127,7 @@ def donations_ui():
     headers = ["Donation ID", "User ID", "Blood Type", "Disease", "Donation Date", "Donor Name", "   Status   "]
     for j, header in enumerate(headers):
         header_label = ctk.CTkLabel(
-            main_frame, fg_color="#7c4848", text=header, text_color="white", font=("Arial", 14, "bold"), anchor="center", corner_radius=5
+            main_frame, fg_color="#ae0c00", text=header, text_color="white", font=("Arial", 14, "bold"), anchor="center", corner_radius=5
         )
         header_label.grid(row=0, column=j, padx=1, pady=1, sticky="nsew")
 
@@ -146,7 +152,7 @@ def donations_ui():
 
             # Only bind click event if the status is "Pending"
             if status == "Pending":
-                label.bind("<Button-1>", lambda e, donation=donation: open_donation_details(donation))
+                label.bind("<Button-1>", lambda e, donation=donation: open_donation_details(donation,root))
 
 
     root.mainloop()

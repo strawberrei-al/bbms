@@ -62,14 +62,44 @@ def login(username, password):
                     role = role_record[0]
                     return True, role, user_id  # Login successful, return role
                 else:
-                    return False, "Role not found."  # No role associated with user_id
+                    return False, "Role not found.", None  # No role associated with user_id
             else:
-                return False, "Incorrect password."  # Password mismatch
+                return False, "Incorrect password.", None  # Password mismatch
         else:
-            return False, "Username not found."  # No such username in the database
+            return False, "Username not found.", None  # No such username in the database
     except Exception as e:
-        return False, f"Database error: {str(e)}", None  # Handle unexpected database errors
+        return False, f"Database error: {str(e)}",None  # Handle unexpected database errors
+    finally:
+        conn.close()
+
+
+def add_admin():
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # Hash the password securely
+        plain_password = "doublezero"
+        hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Insert admin into USER table
+        cursor.execute("""
+            INSERT OR IGNORE INTO USER (user_id, name, age, bloodtype, address, role, contact, email)
+            VALUES (1, 'Admin Zero', 25, 'O+', '123 Main St', 'admin', '1234567890', 'admin@zero.com');
+        """)
+
+        # Insert admin into LOGIN table
+        cursor.execute("""
+            INSERT OR IGNORE INTO LOGIN (username, password, user_id)
+            VALUES ('adminzer0', ?, 1);
+        """, (hashed_password.decode('utf-8'),))
+
+        conn.commit()
+        print("Admin added successfully!")
+    except sqlite3.Error as e:
+        conn.rollback()
+        print(f"Database error: {str(e)}")
     finally:
         conn.close()
     
-    
+add_admin()

@@ -67,6 +67,7 @@ sql_queries = [
 def connect_db():
     return sqlite3.connect("blood_bank.db")
 
+
 # Create or recreate tables
 def create_tables():
     conn = connect_db()
@@ -76,6 +77,7 @@ def create_tables():
     for query in sql_queries:
         cursor.execute(query)
     
+
     # cursor.execute("ALTER TABLE NOTIFICATIONS ADD COLUMN status TEXT DEFAULT 'unread';")
 
     # Insert the 8 standard blood types (only if the table is empty)

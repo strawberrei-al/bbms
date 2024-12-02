@@ -1,5 +1,6 @@
 import sqlite3
-from tkinter import Image, messagebox, ttk
+from tkinter import messagebox
+from PIL import Image
 import customtkinter as ctk
 from user_functions import blood_donation, blood_request, fetch_combined_history
 
@@ -15,20 +16,29 @@ def donationform_ui(user_id):
     window = ctk.CTkToplevel()
     window.geometry("400x400")
     window.title("Donate Blood")
-    ctk.CTkLabel(window, text="Donate Blood to Save a Life", font=("Arial", 20)).pack(pady=10)
+    # ctk.CTkLabel(window, text="Donate Blood to Save a Life", font=("Arial", 20)).pack(pady=5)
+    # Add the background image
+    background_image = Image.open("bg_donationforms.png")  # Replace with your image path
+    background_image_ctk = ctk.CTkImage(background_image, size=(400, 400))
+    background_label = ctk.CTkLabel(window, image=background_image_ctk, text="")
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    # Create a frame on top of the background
+    form_frame = ctk.CTkFrame(window, fg_color="white", corner_radius=10)  # Customize as needed
+    form_frame.pack(expand=True, pady=20)  # Center the frame and add spacing
 
     # Input fields
-    ctk.CTkLabel(window, text="Blood Type:").pack(pady=5)
-    blood_type = ctk.CTkOptionMenu(window, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-    blood_type.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Blood Type:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    blood_type = ctk.CTkOptionMenu(form_frame, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], fg_color="#B25656")
+    blood_type.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-    ctk.CTkLabel(window, text="Donor Name:").pack(pady=5)
-    donor_name_entry = ctk.CTkEntry(window, placeholder_text="Enter Donor Name")
-    donor_name_entry.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Donor Name:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    donor_name_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter Donor Name")
+    donor_name_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    ctk.CTkLabel(window, text="Any Disease:").pack(pady=5)
-    disease_entry = ctk.CTkEntry(window, placeholder_text="Enter Disease (if any)")
-    disease_entry.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Any Disease:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    disease_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter Disease (if any)")
+    disease_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
     # Submit button function
     def submit_donation():
@@ -51,8 +61,7 @@ def donationform_ui(user_id):
             messagebox.showerror("Error", f"An error occurred: {e}")
 
     # Submit button
-    ctk.CTkButton(window, text="Submit", command=submit_donation).pack(pady=10)
-
+    ctk.CTkButton(form_frame, text="Submit", fg_color="#B25656", command=submit_donation).grid(row=3, column=0, columnspan=2, pady=10)
 
 def request_blood(user_id):
     """
@@ -63,27 +72,34 @@ def request_blood(user_id):
         user_id (int): The ID of the currently logged-in user.
     """
     # Create the window
-    window = ctk.CTkToplevel()
+    window = ctk.CTkToplevel(fg_color="white")
     window.geometry("400x400")
     window.title("Request Blood")
-    ctk.CTkLabel(window, text="We're here for you. Send us a Request!", font=("Arial", 20)).pack(pady=10)
+
+    background_image = Image.open("bg_requestform.png")  # Replace with your image path
+    background_image_ctk = ctk.CTkImage(background_image, size=(400, 400))
+    background_label = ctk.CTkLabel(window, image=background_image_ctk, text="")
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    form_frame = ctk.CTkFrame(window, fg_color="white", corner_radius=10)  # Customize as needed
+    form_frame.pack(expand=True, pady=20)
 
     # Input fields
-    ctk.CTkLabel(window, text="Blood Type:").pack(pady=5)
-    blood_type = ctk.CTkOptionMenu(window, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-    blood_type.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Blood Type:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    blood_type = ctk.CTkOptionMenu(form_frame, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], fg_color="#B25656")
+    blood_type.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-    ctk.CTkLabel(window, text="Quantity(ml):").pack(pady=5)
-    quantity_entry = ctk.CTkEntry(window, placeholder_text="Enter Quantity Needed")
-    quantity_entry.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Quantity(ml):").grid(row=1, column=0, padx=10, pady=5, sticky="")
+    quantity_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter Quantity Needed")
+    quantity_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    ctk.CTkLabel(window, text="Patient Name:").pack(pady=5)
-    patient_name_entry = ctk.CTkEntry(window, placeholder_text="Enter Patient Name")
-    patient_name_entry.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Patient Name:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    patient_name_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter Patient Name")
+    patient_name_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
-    ctk.CTkLabel(window, text="Reason:").pack(pady=5)
-    reason_entry = ctk.CTkEntry(window, placeholder_text="Enter Reason for Request")
-    reason_entry.pack(pady=5)
+    ctk.CTkLabel(form_frame, text="Reason:").grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    reason_entry = ctk.CTkEntry(form_frame, placeholder_text="Enter Reason for Request")
+    reason_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     # Submit button function
     def submit_request():
@@ -107,7 +123,7 @@ def request_blood(user_id):
             messagebox.showerror("Error", f"An error occurred: {e}")
 
     # Submit button
-    ctk.CTkButton(window, text="Submit", command=submit_request).pack(pady=10)
+    ctk.CTkButton(form_frame, text="Submit", fg_color="#B25656", command=submit_request).grid(row=4, column=0, columnspan=2, pady=10)
 
 
 def display_history(user_id):
@@ -120,11 +136,11 @@ def display_history(user_id):
     # Fetch history
     history = fetch_combined_history(user_id)
     if not history:
-        ctk.CTkMessagebox.show_info("No History", "No history to display.")
+        messagebox.showinfo("No History", "No history to display.")
         return
 
     # Create new window
-    history_window = ctk.CTkToplevel()
+    history_window = ctk.CTkToplevel(fg_color="#faf0e6")
     history_window.geometry("800x400")
     history_window.title("Your History")
 
@@ -143,8 +159,10 @@ def display_history(user_id):
         header_label = ctk.CTkLabel(
             table_frame,
             text=header,
+            text_color="white",
             font=("Arial", 14, "bold"),
-            fg_color="#E8E8E8",
+            fg_color="#ae0c00",
+            corner_radius=5,
             anchor="center",
             width=20,
         )
@@ -296,11 +314,6 @@ def delete_notification(notification_id, window):
         conn.rollback()
     finally:
         conn.close()
-
-
-# def logout(user_menu):
-#     user_menu.destroy()
-#     main_page() # balik ra ni dayon sa login/register page
 
 # diri ang mga ui guro, ayaw nalang sa ang functions.
 # lahi na nga file ang functions. Pwede ra siya sa user_logic or what.

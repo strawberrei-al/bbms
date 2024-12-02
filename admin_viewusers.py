@@ -36,8 +36,8 @@ def show_users():
         return
 
     # Create a new window for the user list
-    users_window = ctk.CTkToplevel()
-    users_window.geometry("800x400")
+    users_window = ctk.CTkToplevel(fg_color="#faf0e6")
+    users_window.geometry("900x400")
     users_window.title("Users")
 
     table_frame = ctk.CTkFrame(users_window, fg_color="white", corner_radius=10)
@@ -49,10 +49,12 @@ def show_users():
         label = ctk.CTkLabel(
             table_frame, 
             text=header, 
-            font=("Arial", 12, "bold"), 
-            fg_color="#E8E8E8", 
+            text_color="white",
+            font=("Arial", 14, "bold"), 
+            fg_color="#ae0c00", 
+            corner_radius=5,
             anchor="center", 
-            width=20
+            # width=20
             )
         label.grid(row=0, column=col, padx=2, pady=2, sticky="nsew")
 
@@ -70,7 +72,7 @@ def show_users():
             label.grid(row=row, column=col, padx=2, pady=2, sticky="nsew")
 
                 # Add a delete button in the last column for each user
-        delete_button = ctk.CTkButton(table_frame, text="Delete", command=lambda user_id=user["User ID"], window=users_window: delete_user(user_id, window))
+        delete_button = ctk.CTkButton(table_frame, text="Delete", text_color="white",fg_color="#e62020", command=lambda user_id=user["User ID"], window=users_window: delete_user(user_id, window))
         delete_button.grid(row=row, column=len(user), padx=5, pady=5)
 
     for col in range(len(headers)):
@@ -93,6 +95,7 @@ def delete_user(user_id, users_window):
     # Delete the user from the database
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
+    cursor.execute("DELETE FROM LOGIN WHERE user_id = ?", (user_id,))
     cursor.execute("DELETE FROM USER WHERE user_id = ?", (user_id,))
     conn.commit()
     conn.close()

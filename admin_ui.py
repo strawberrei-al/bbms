@@ -1,5 +1,6 @@
 import sqlite3
-from tkinter import Image, simpledialog
+from tkinter import simpledialog
+from PIL import Image
 import customtkinter as ctk
 
 
@@ -74,18 +75,18 @@ def refresh_bloodstockUI(root):
         col = i % 4
 
         # Create a button with updated stock values for each blood type
-        button = ctk.CTkButton(root, text=f"{blood_type}\n{stock} mL", width=180, height=100,
+        button = ctk.CTkButton(root, fg_color="#880808",text=f"{blood_type}\n{stock} mL", width=180, height=100,
                                command=lambda b=blood_type: open_update_window(b,root))
 
         # Place button in the grid
         button.grid(row=row, column=col, padx=10, pady=10)
 
     # Update the current total label
-    current_total_label = ctk.CTkLabel(root, text=f"Current Total: {current_total} mL", width=400, height=50, anchor="center", fg_color="#45818E")
+    current_total_label = ctk.CTkLabel(root, text=f"Current Total: {current_total} mL", width=400, height=50, anchor="center", fg_color="#D2042D")
     current_total_label.grid(row=4, column=0, columnspan=2, pady=10)
 
     # Update the all-time total label
-    all_time_total_label = ctk.CTkLabel(root, text=f"All-Time Total: {all_time_total} mL", width=400, height=50, anchor="center", fg_color="#45818E")
+    all_time_total_label = ctk.CTkLabel(root, text=f"All-Time Total: {all_time_total} mL", width=400, height=50, anchor="center", fg_color="#D2042D")
     all_time_total_label.grid(row=4, column=2, columnspan=2, pady=10)
 
 
@@ -127,15 +128,20 @@ def open_update_window(blood_type, root):
 
 
     # Create a new window for adding or deducting stock
-    window = ctk.CTkToplevel()
+    window = ctk.CTkToplevel(fg_color="white")
     window.title(f"Manage Stock for {blood_type}")
     window.geometry("300x200")
 
+    background_image = Image.open("bg_bloodupdate.png")  # Replace with your image path
+    background_image_ctk = ctk.CTkImage(background_image, size=(300, 200))
+    background_label = ctk.CTkLabel(window, image=background_image_ctk, text="")
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
     # Create Add and Deduct buttons
-    add_button = ctk.CTkButton(window, text="Add Blood", command=lambda: update_stock("add"))
+    add_button = ctk.CTkButton(window, fg_color="#D2042D",text="Add Blood", command=lambda: update_stock("add"))
     add_button.place(relx=0.5, rely=0.4, anchor="center")
 
-    deduct_button = ctk.CTkButton(window, text="Deduct Blood", command=lambda: update_stock("deduct"))
+    deduct_button = ctk.CTkButton(window, fg_color="#D2042D", text="Deduct Blood", command=lambda: update_stock("deduct"))
     deduct_button.place(relx=0.5, rely=0.6, anchor="center")
 
 
@@ -156,7 +162,7 @@ def bloodstock_ui():
         all_time_total = 0
 
     # Create the window
-    root = ctk.CTk()
+    root = ctk.CTk(fg_color="white")
     root.title("Blood Stock Management")
     root.geometry("800x400")
 
@@ -167,17 +173,17 @@ def bloodstock_ui():
         col = i % 4
 
         # Create a button with an image (if available) for each blood type
-        button = ctk.CTkButton(root, text=f"{blood_type}\n{stock} mL", width=180, height=100,
+        button = ctk.CTkButton(root, fg_color="#880808",text=f"{blood_type}\n{stock} mL", width=180, height=100,
                                command=lambda b=blood_type: open_update_window(b,root))
 
         # Place button in the grid
         button.grid(row=row, column=col, padx=10, pady=10)
 
-    current_total_label = ctk.CTkLabel(root, text=f"Current Total: {current_total} mL", width=400, height=50, anchor="center", fg_color="#45818E")
+    current_total_label = ctk.CTkLabel(root, text=f"Current Total: {current_total} mL", width=400, height=50, anchor="center", fg_color="#D2042D")
     current_total_label.grid(row=4, column=0, columnspan=2, pady=10)
 
     # Row 5, Column 0 and 1 will be the "All-Time Total" label (spanning 2 columns)
-    all_time_total_label = ctk.CTkLabel(root, text=f"All-Time Total: {all_time_total} mL ", width=400, height=50, anchor="center", fg_color="#45818E")
+    all_time_total_label = ctk.CTkLabel(root, text=f"All-Time Total: {all_time_total} mL ", width=400, height=50, anchor="center", fg_color="#D2042D")
     all_time_total_label.grid(row=4, column=2, columnspan=2, pady=10)
 
     root.grid_rowconfigure(0, weight=1)  # Top empty space
@@ -199,15 +205,3 @@ def bloodstock_ui():
 
 # Run the Blood Stock UI
 # bloodstock_ui()
-
-
-def requests_ui():
-    pass
-
-
-def display_allhistory():
-    pass
-
-
-def view_userlist():
-    pass
