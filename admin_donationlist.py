@@ -109,36 +109,47 @@ def open_donation_details(donation):
 
 def donations_ui():
     """Main donation list page"""
-    root = ctk.CTk()
+    root = ctk.CTk(fg_color="#faf0e6")
     root.title("Donation List")
     root.geometry("800x400")
 
     # Frame for Donation List Table
-    main_frame = ctk.CTkFrame(root)
-    main_frame.pack(fill="both", expand=True, padx=10, pady=10)
-
-    scrollable_frame = ctk.CTkScrollableFrame(main_frame)
+    main_frame = ctk.CTkFrame(root, fg_color="white", corner_radius=10)
+    main_frame.place(relx=0.05, rely=0.1, relwidth=0.9, relheight=0.8)
 
     # Create column headers
-    headers = ["Donation ID", "User ID", "Blood Type", "Disease", "Donation Date", "Donor Name", "Status"]
+    headers = ["Donation ID", "User ID", "Blood Type", "Disease", "Donation Date", "Donor Name", "   Status   "]
     for j, header in enumerate(headers):
-        header_label = ctk.CTkLabel(scrollable_frame, text=header, font=("Arial", 12), anchor="w")
-        header_label.grid(row=0, column=j, padx=10, pady=5)
+        header_label = ctk.CTkLabel(
+            main_frame, fg_color="#7c4848", text=header, text_color="white", font=("Arial", 14, "bold"), anchor="center", corner_radius=5
+        )
+        header_label.grid(row=0, column=j, padx=1, pady=1, sticky="nsew")
 
-    scrollable_frame.grid(row=1, column=0,columnspan=len(headers), sticky="nsew")
+    # Configure column widths
+    for column_index in range(len(headers)):
+        main_frame.grid_columnconfigure(column_index, weight=1, minsize=100)  # Set a minimum size for alignment
 
     # Populate the table with donation data
     donations = fetch_donations()
     for i, donation in enumerate(donations):
+        status = donation[-1]  # Assuming status is the last item
         for j, value in enumerate(donation):
-            label = ctk.CTkLabel(scrollable_frame, text=str(value), anchor="w")
-            label.grid(row=i + 1, column=j, padx=10, pady=5, sticky="w")
+            label = ctk.CTkLabel(
+                main_frame,
+                text=str(value),
+                anchor="center",
+                fg_color="#F0F0F0" if j == len(donation) - 1 and status != "Pending" else None,
+                text_color="gray" if j == len(donation) - 1 and status != "Pending" else None,
+                corner_radius=5,
+            )
+            label.grid(row=i + 1, column=j, padx=1, pady=1, sticky="nsew")
 
-            # Add click event for each row
-            label.bind("<Button-1>", lambda e, donation=donation: open_donation_details(donation))
-    main_frame.grid_rowconfigure(1,weight=1)
-    main_frame.grid_columnconfigure(0,weight=1)
+            # Only bind click event if the status is "Pending"
+            if status == "Pending":
+                label.bind("<Button-1>", lambda e, donation=donation: open_donation_details(donation))
+
 
     root.mainloop()
+
 
 # donations_ui()
