@@ -190,6 +190,46 @@ def display_history(user_id):
 
 
 def notification(user_id):
+    def refresh_notifications():
+        """Refreshes the notifications list in the table."""
+        # Clear existing widgets in the table frame
+        for widget in table_frame.winfo_children():
+            widget.destroy()
+
+        # Reload notifications from the database
+        conn = sqlite3.connect("blood_bank.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT notification_id, remarks, timestamp, status 
+            FROM NOTIFICATIONS WHERE user_id = ?
+        """, (user_id,))
+        updated_notifications = cursor.fetchall()
+        conn.close()
+
+        if not updated_notifications:
+            messagebox.showinfo("No Notifications", "You have no new notifications.")
+            notif_window.destroy()
+            return
+
+        # Rebuild the table headers
+        headers = ["ID", "Date", "Status", "Message"]
+        for col, header in enumerate(headers):
+            label = ctk.CTkLabel(table_frame, text=header, font=("Arial", 12, "bold"), anchor="center")
+            label.grid(row=0, column=col, padx=10, pady=5)
+
+        # Rebuild rows with updated data
+        for row_idx, notif in enumerate(updated_notifications, start=1):
+            notif_id, message, date, status = notif
+            message_preview = message[:40] + "..." if len(message) > 40 else message
+
+            ctk.CTkLabel(table_frame, text=notif_id, font=("Arial", 10), anchor="center").grid(row=row_idx, column=0, padx=10, pady=5)
+            ctk.CTkLabel(table_frame, text=date, font=("Arial", 10), anchor="center").grid(row=row_idx, column=1, padx=10, pady=5)
+            ctk.CTkLabel(table_frame, text=status, font=("Arial", 10), anchor="center").grid(row=row_idx, column=2, padx=10, pady=5)
+
+            clickable_label = ctk.CTkLabel(table_frame, text=message_preview, font=("Arial", 10), anchor="w", cursor="hand2")
+            clickable_label.grid(row=row_idx, column=3, padx=10, pady=5, sticky="w")
+            clickable_label.bind("<Button-1>", lambda e, n_id=notif_id: open_notification_details(n_id, notif_window, refresh_notifications))
+
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()
     cursor.execute("""
@@ -251,6 +291,16 @@ def notification(user_id):
 def open_notification_details(notification_id, parent_window):
 
     parent_window.withdraw()
+
+    conn = sqlite3.connect("blood_bank.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE NOTIFICATIONS
+        SET status = 'read'
+        WHERE notification_id = ?
+    """, (notification_id,))
+    conn.commit()
+
     # Fetch notification details
     conn = sqlite3.connect("blood_bank.db")
     cursor = conn.cursor()

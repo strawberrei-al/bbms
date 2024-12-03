@@ -163,42 +163,45 @@ def admin_login(root):
 
 # Function for Registration Form
 def register_form():
-    form_window = ctk.CTkToplevel()
+    form_window = ctk.CTkToplevel(fg_color="#faf0e6")
     form_window.geometry("400x550")
     form_window.title("Register")
 
     # Title
-    ctk.CTkLabel(form_window, text="Register", font=("Arial", 20)).pack(pady=10)
+    # ctk.CTkLabel(form_window, text="Register", font=("Arial", 20)).pack(pady=10)
 
-    account_header = ctk.CTkLabel(form_window, text="Account", font=("Arial", 18, "bold"))
+    frame = ctk.CTkFrame(form_window, fg_color="white", corner_radius=10)
+    frame.place(relx=0.05, rely=0.1, relwidth=0.9, relheight=0.8)
+
+    account_header = ctk.CTkLabel(frame, text="Account", font=("Arial", 18, "bold"))
     account_header.pack(pady=(10, 5))
 
-    username_entry = ctk.CTkEntry(form_window, placeholder_text="Username")
+    username_entry = ctk.CTkEntry(frame, placeholder_text="Username")
     username_entry.pack(pady=5)
-    pass_entry = ctk.CTkEntry(form_window, placeholder_text="Password", show="*")
+    pass_entry = ctk.CTkEntry(frame, placeholder_text="Password", show="*")
     pass_entry.pack(pady=5)
 
-    personal_details_header = ctk.CTkLabel(form_window, text="Personal Details", font=("Arial", 18, "bold"))
+    personal_details_header = ctk.CTkLabel(frame, text="Personal Details", font=("Arial", 18, "bold"))
     personal_details_header.pack(pady=(20, 5))
 
     # Input Fields
-    name_entry = ctk.CTkEntry(form_window, placeholder_text="Name")
+    name_entry = ctk.CTkEntry(frame, placeholder_text="Name")
     name_entry.pack(pady=5)
-    age_entry = ctk.CTkEntry(form_window, placeholder_text="Age")
+    age_entry = ctk.CTkEntry(frame, placeholder_text="Age")
     age_entry.pack(pady=5)
 
-    contact_entry = ctk.CTkEntry(form_window, placeholder_text="Phone number")
+    contact_entry = ctk.CTkEntry(frame, placeholder_text="Phone number")
     contact_entry.pack(pady=5)
-    email_entry = ctk.CTkEntry(form_window, placeholder_text="Email")
+    email_entry = ctk.CTkEntry(frame, placeholder_text="Email")
     email_entry.pack(pady=5)
 
-    address_entry = ctk.CTkEntry(form_window, placeholder_text="Address")
+    address_entry = ctk.CTkEntry(frame, placeholder_text="Address")
     address_entry.pack(pady=5)
 
     # Dropdown for Blood Type
     blood_type = ctk.StringVar(value="Select Blood Type")
     blood_type_dropdown = ctk.CTkOptionMenu(
-        form_window, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], variable=blood_type
+        frame, values=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], variable=blood_type, fg_color="#ae0c00"
     )
     blood_type_dropdown.pack(pady=5)
 
@@ -235,7 +238,7 @@ def register_form():
             email_entry.delete(0, "end")
             blood_type.set("Select Blood Type")
 
-    ctk.CTkButton(form_window, text="Submit", command=submit_registration).pack(pady=10)
+    ctk.CTkButton(frame, text="Submit", fg_color="#ae0c00", command=submit_registration).pack(pady=10)
 
 # Function to Create Login Form
 def login_form(role,root):
